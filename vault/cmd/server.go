@@ -2,7 +2,7 @@ package main
 
 import (
 	flag "github.com/spf13/pflag"
-	"vault"
+	"gokit-training/vault"
 	"context"
 	"os"
 	"os/signal"
@@ -11,7 +11,7 @@ import (
 	"net/http"
 	"github.com/rs/zerolog"
 	"net"
-	"vault/pb"
+	"gokit-training/vault/pb"
 	"google.golang.org/grpc"
 )
 

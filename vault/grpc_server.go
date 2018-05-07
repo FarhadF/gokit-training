@@ -3,7 +3,7 @@ package vault
 import (
 	grpctransport "github.com/go-kit/kit/transport/grpc"
 	"context"
-	"vault/pb"
+	"gokit-training/vault/pb"
 )
 
 type grpcServer struct {
