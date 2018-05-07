@@ -10,12 +10,15 @@ type Service interface {
 	Lorem(ctx context.Context, requestType string, min int, max int)(string, error)
 }
 
+//implementation with empty struct (stateless)
 type loremService struct {}
 
+//constructor - we can later add initialization if needed
 func NewService() loremService {
 	return loremService{}
 }
 
+//implementation
 func (loremService) Lorem (ctx context.Context, requestType string, min int, max int) (string, error) {
 	switch requestType {
 	case "word":
