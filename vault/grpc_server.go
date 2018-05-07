@@ -4,6 +4,7 @@ import (
 	grpctransport "github.com/go-kit/kit/transport/grpc"
 	"context"
 	"gokit-training/vault/pb"
+	"fmt"
 )
 
 type grpcServer struct {
@@ -33,6 +34,7 @@ func EncodeGRPCHashRequest(ctx context.Context, r interface{}) (interface{}, err
 }
 
 func DecodeGRPCHashRequest(ctx context.Context, r interface{}) (interface{}, error) {
+	fmt.Println("decoding",r)
 	req := r.(*pb.HashRequest)
 	return hashRequest{Password: req.Password}, nil
 }

@@ -60,8 +60,7 @@ func New(conn *grpc.ClientConn) vault.Service {
 		pb.ValidateResponse{},
 	).Endpoint()
 	return vault.Endpoints{
-		HashEndpoint:
-		hashEndpoint,
+		HashEndpoint: hashEndpoint,
 		ValidateEndpoint: validateEndpoint,
 	}
 }
@@ -73,16 +72,14 @@ func pop(s []string) (string, []string) {
 	return s[0], s[1:]
 }
 
-func hash(ctx context.Context, service vault.Service,
-	password string) {
+func hash(ctx context.Context, service vault.Service, password string) {
 	h, err := service.Hash(ctx, password)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
 	fmt.Println(h)
 }
-func validate(ctx context.Context, service vault.Service,
-	password, hash string) {
+func validate(ctx context.Context, service vault.Service, password, hash string) {
 	valid, err := service.Validate(ctx, password, hash)
 	if err != nil {
 		log.Fatalln(err.Error())

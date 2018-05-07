@@ -14,6 +14,8 @@ import (
 	"gokit-training/vault/pb"
 	"google.golang.org/grpc"
 	"github.com/rs/zerolog/log"
+	stdprometheus "github.com/prometheus/client_golang/prometheus"
+	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
 )
 
 func main() {
@@ -33,9 +35,28 @@ func main() {
 	if console {
 		logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	}
-
+	fieldKeys := []string{"method", "error"}
+	requestCount := kitprometheus.NewCounterFrom(stdprometheus.CounterOpts{
+		Namespace: "my_group",
+		Subsystem: "vault_service",
+		Name:      "request_count",
+		Help:      "Number of requests received.",
+	}, fieldKeys)
+	requestLatency := kitprometheus.NewSummaryFrom(stdprometheus.SummaryOpts{
+		Namespace: "my_group",
+		Subsystem: "vault_service",
+		Name:      "request_latency_microseconds",
+		Help:      "Total duration of requests in microseconds.",
+	}, fieldKeys)
+	countResult := kitprometheus.NewSummaryFrom(stdprometheus.SummaryOpts{
+		Namespace: "my_group",
+		Subsystem: "vault_service",
+		Name:      "count_result",
+		Help:      "The result of each count method.",
+	}, []string{}) // no fields here
 
 	svc := vault.NewService()
+	svc = vault.InstrumentingMiddleware{requestCount, requestLatency, countResult, svc}
 	errChan := make(chan error)
 	//os signal handling
 	go func() {
