@@ -6,3 +6,5 @@
 .idea/libraries
 .idea/
 vendor/
+*/cmd/server
+*/cmd/client
