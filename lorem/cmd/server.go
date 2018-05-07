@@ -42,7 +42,7 @@ func main(){
 		pb.RegisterLoremServer(grpcServer, handler)
 		errChan <- grpcServer.Serve(listener)
 	}()
-
+	//Handle os signals
 	go func() {
 		c := make(chan os.Signal, 1)
 		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)

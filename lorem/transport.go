@@ -5,7 +5,7 @@ import (
 	"gokit-training/lorem/pb"
 )
 
-//Encode and Decode Lorem Request
+//Encode and Decode Lorem Request and response
 func EncodeGRPCLoremRequest(_ context.Context, r interface{}) (interface{}, error) {
 	req := r.(loremRequest)
 	return &pb.LoremRequest{

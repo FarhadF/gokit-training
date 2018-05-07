@@ -5,23 +5,25 @@ import (
 	"context"
 	"errors"
 )
-
+//model request and response
 type loremRequest struct {
 	RequestType 	string 	`json:"requesttype"`
 	Min 	int 	`json:"min"`
 	Max 	int 	`json:"max"`
 }
 
+//model request and response
 type loremResponse struct {
 	Message string 	`json:"message,omitempty"`
 	Err 	string 	`json:"err,omitempty"`
 }
 
+//Endpoints Wrapper
 type Endpoints struct {
 	LoremEndpoint endpoint.Endpoint
 }
 
-
+//Make actual endpoint per Method
 func MakeLoremEndpoint(svc Service)(endpoint.Endpoint) {
 	return func(ctx context.Context, request interface{})(interface{}, error){
 		req := request.(loremRequest)
@@ -33,7 +35,8 @@ func MakeLoremEndpoint(svc Service)(endpoint.Endpoint) {
 	}
 }
 
-
+// Wrapping Endpoints as a Service implementation.
+// Will be used in gRPC client
 func (e Endpoints) Lorem (ctx context.Context, requestType string, min int, max int)(string, error){
 	req := loremRequest{
 		requestType,

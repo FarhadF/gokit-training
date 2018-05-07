@@ -11,7 +11,7 @@ import (
 	"os"
 	"fmt"
 )
-
+//create new client returns Lorem Service
 func NewGRPCClient(conn *grpc.ClientConn) lorem.Service {
 	var loremEndpoint = grpctransport.NewClient(
 		conn, "pb.Lorem", "Lorem",
@@ -56,6 +56,8 @@ func main(){
 
 	//}
 }
+
+//callService helper
 func callLorem(ctx context.Context, service lorem.Service, requestType string, min int, max int, logger zerolog.Logger) {
 	mesg, err := service.Lorem(ctx, requestType, min, max)
 	if err != nil {
