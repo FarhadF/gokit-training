@@ -56,6 +56,7 @@ func main() {
 	}, []string{}) // no fields here
 
 	svc := vault.NewService()
+	svc = vault.LoggingMiddleware{logger, svc}
 	svc = vault.InstrumentingMiddleware{requestCount, requestLatency, countResult, svc}
 	errChan := make(chan error)
 	//os signal handling
