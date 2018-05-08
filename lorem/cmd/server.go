@@ -12,14 +12,23 @@ import (
 	"syscall"
 	"fmt"
 	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
 
 func main(){
 	//zerolog
 	logger := zerolog.New(os.Stderr).With().Timestamp().Logger()
-	gRPCAddr := flag.StringP("grpc", "g", ":8081", "GRPC Address")
+	var (
+		console bool
+		gRPCAddr string
+	)
+	flag.StringVarP(&gRPCAddr,"grpc", "g", ":8081", "GRPC Address")
+	flag.BoolVarP(&console, "console", "c", false, "turns on pretty console logging" )
 	flag.Parse()
-	logger.Info().Msg("starting grpc server at"+ string(*gRPCAddr))
+	logger.Info().Msg("starting grpc server at"+ string(gRPCAddr))
+	if console {
+		logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	}
 	ctx := context.Background()
 	// init lorem service
 	var svc lorem.Service
@@ -32,7 +41,7 @@ func main(){
 	}
 	//execute grpc server
 	go func() {
-		listener, err := net.Listen("tcp", *gRPCAddr)
+		listener, err := net.Listen("tcp", gRPCAddr)
 		if err != nil {
 			errChan <- err
 			return
