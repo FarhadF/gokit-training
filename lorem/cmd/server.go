@@ -63,8 +63,8 @@ func main(){
 
 	// init lorem service
 	var svc lorem.Service
-	loremStruct := lorem.NewService()
-	svc = loremStruct
+	svc = lorem.NewService()
+	svc = lorem.LoggingMiddleware{logger, svc}
 	svc = lorem.InstrumentingMiddleware{requestCount, requestLatency, countResult, svc}
 	errChan := make(chan error)
 	// creating Endpoints struct

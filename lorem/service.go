@@ -14,7 +14,7 @@ type Service interface {
 type loremService struct {}
 
 //constructor - we can later add initialization if needed
-func NewService() loremService {
+func NewService() Service {
 	return loremService{}
 }
 
