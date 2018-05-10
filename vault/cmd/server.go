@@ -16,6 +16,7 @@ import (
 	"github.com/rs/zerolog/log"
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
+	"github.com/julienschmidt/httprouter"
 )
 
 func main() {
@@ -75,8 +76,18 @@ func main() {
 	// HTTP transport
 	go func() {
 		logger.Info().Str("http:", httpAddr).Msg("")
-		handler := vault.NewHTTPServer(ctx, endpoints)
-		errChan <- http.ListenAndServe(httpAddr, handler)
+		//handler := vault.NewHTTPServer(ctx, endpoints)
+		//httprouter
+		r := httprouter.New()
+		vault.Endpoints{
+			Ctx: ctx,
+			// This is incredibly laborious when we want to add e.g. rate
+			// limiters. It would be better to bundle all the endpoints up,
+			// somehow... or, use code generation, of course.
+			HashEndpoint: vault.MakeHashEndpoint(svc),
+			ValidateEndpoint:    vault.MakeValidateEndpoint(svc),
+			}.Register(r)
+		errChan <- http.ListenAndServe(httpAddr, r)
 	}()
 	// GRPC transport
 	go func() {

@@ -21,8 +21,7 @@
     "metrics",
     "metrics/internal/lv",
     "metrics/prometheus",
-    "transport/grpc",
-    "transport/http"
+    "transport/grpc"
   ]
   revision = "ca4112baa34cb55091301bdc13b1420a122b1b9e"
   version = "v0.7.0"
@@ -206,6 +205,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "e2ae2be51c1718fd36528c5c38445bd83c8f50afde559a85d2fabd9f9cb8505b"
+  inputs-digest = "1dc742d56f1626b25166e434613d6fa9065f77e0079cbacc11bce9852c6cb3ef"
   solver-name = "gps-cdcl"
   solver-version = 1

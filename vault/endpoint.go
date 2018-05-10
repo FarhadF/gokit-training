@@ -31,8 +31,9 @@ func MakeValidateEndpoint(svc Service) endpoint.Endpoint {
 
 //good practice to write an
 //implementation of our vault.Service interface, which just makes the necessary calls to
-//the underlying endpoints.
+//the underlying endpoints. ** need context if you are using httprouter!!
 type Endpoints struct {
+	Ctx context.Context
 	HashEndpoint endpoint.Endpoint
 	ValidateEndpoint endpoint.Endpoint
 }
