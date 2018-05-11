@@ -1,0 +1,33 @@
+syntax = "proto3";
+package pb;
+//import "google/protobuf/timestamp.proto";
+
+
+service Movies {
+    rpc GetMovies(Empty) returns (GetMoviesResponse) {}
+}
+
+
+/*message GetMoviesResponse {
+    string requestType = 1;
+    int32 min = 2;
+    int32 max = 3;
+}*/
+
+message GetMoviesResponse {
+    repeated Movie movies = 1;
+    string err = 2;
+}
+
+message Movie {
+    string id = 1;
+    string  title = 2;
+    string director = 3;
+    string year = 4;
+    string userid = 5;
+   // google.protobuf.Timestamp createon = 6;
+    //google.protobuf.Timestamp updatedon = 7;
+}
+
+message Empty {}
+
