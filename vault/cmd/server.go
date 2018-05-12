@@ -25,7 +25,7 @@ func main() {
 		gRPCAddr string
 		console bool
 	)
-	flag.StringVarP(&httpAddr, "http", "H",":8080","http listen address")
+	flag.StringVarP(&httpAddr, "http", "H",":8082","http listen address")
 	flag.StringVarP(&gRPCAddr, "grpc", "G",":8081","gRPC listen address")
 	flag.BoolVarP(&console, "console", "c", false, "turns on pretty console logging" )
 	flag.Parse()

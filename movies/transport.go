@@ -3,9 +3,10 @@ package movies
 import (
 	"context"
 	"gokit-training/movies/pb"
+	"github.com/golang/protobuf/ptypes"
 )
 
-//Encode and Decode Lorem Request and response
+//Encode and Decode GetMovies Request and response
 func EncodeGRPCGetMoviesRequest(_ context.Context, r interface{}) (interface{}, error) {
 	return nil , nil
 }
@@ -14,17 +15,27 @@ func DecodeGRPCGetMoviesRequest(_ context.Context, r interface{}) (interface{}, 
 	return nil, nil
 }
 
-// Encode and Decode Lorem Response
+// Encode and Decode GetMovies Response
 func EncodeGRPCGetMoviesResponse(_ context.Context, r interface{}) (interface{}, error) {
 	resp := r.(getMoviesResponse)
 	var movies []*pb.Movie
 	for _, movie := range resp.Movies {
+		createdOn, err  := ptypes.TimestampProto(movie.CreatedOn)
+		if err != nil {
+			//todo bring logger
+		}
+		updatedOn, err := ptypes.TimestampProto(movie.UpdatedOn)
+		if err != nil {
+			//todo bring logger
+		}
 		m := &pb.Movie{
 			Id: movie.Id,
 			Title: movie.Title,
 			Director: movie.Director,
 			Year: movie.Year,
 			Userid: movie.Userid,
+			Createdon: createdOn ,
+			Updatedon: updatedOn,
 		}
 		movies = append(movies, m)
 	}
@@ -38,12 +49,23 @@ func DecodeGRPCGetMoviesResponse(_ context.Context, r interface{}) (interface{},
 	resp := r.(*pb.GetMoviesResponse)
 	var movies []Movie
 	for _, movie := range resp.Movies {
+		createdOn, err := ptypes.Timestamp(movie.Createdon)
+		if err != nil {
+			//logger.Error().Err(err).Msg("convert protobuf timestamp to time.time")
+		}
+		updatedOn, err := ptypes.Timestamp(movie.Updatedon)
+		if err != nil {
+			//svc.logger.Error().Err(err).Msg("convert protobuf timestamp to time.time")
+		}
 		m := Movie{
 			Id: movie.Id,
 			Title: movie.Title,
 			Director: movie.Director,
 			Year: movie.Year,
 			Userid: movie.Userid,
+			CreatedOn: createdOn,
+			UpdatedOn: updatedOn,
+
 		}
 		movies = append(movies, m)
 	}

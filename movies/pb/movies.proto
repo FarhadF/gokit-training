@@ -1,6 +1,6 @@
 syntax = "proto3";
 package pb;
-//import "google/protobuf/timestamp.proto";
+import "google/protobuf/timestamp.proto";
 
 
 service Movies {
@@ -25,8 +25,8 @@ message Movie {
     string director = 3;
     string year = 4;
     string userid = 5;
-   // google.protobuf.Timestamp createon = 6;
-    //google.protobuf.Timestamp updatedon = 7;
+    google.protobuf.Timestamp createdon = 6;
+    google.protobuf.Timestamp updatedon = 7;
 }
 
 message Empty {}

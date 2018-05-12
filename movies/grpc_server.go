@@ -11,7 +11,7 @@ type grpcServer struct {
 	getMovies grpctransport.Handler
 }
 
-// implement getMovies server Interface in lorem.pb.go
+// implement getMovies server Interface in movies.pb.go
 func (s *grpcServer) GetMovies(ctx context.Context, r *pb.Empty)(*pb.GetMoviesResponse, error) {
 	_, resp, err := s.getMovies.ServeGRPC(ctx, r)
 	if err != nil {

@@ -40,15 +40,15 @@ func main(){
 
 
 
-	// init lorem service
+	// init movies service
 	var svc movies.Service
-	db, err := sql.Open("postgres", "postgresql://appuser@localhost:26257/appdb?sslmode=disable")
+	db, err := sql.Open("postgres", "postgresql://app_user@localhost:26257/app_database?sslmode=disable")
 	if err != nil {
 		logger.Fatal().Err(err).Msg("db connection failed")
 	}
 	svc = movies.NewService(db, logger)
-	//svc = lorem.LoggingMiddleware{logger, svc}
-	//svc = lorem.InstrumentingMiddleware{requestCount, requestLatency, countResult, svc}
+	//svc = movies.LoggingMiddleware{logger, svc}
+	//svc = movies.InstrumentingMiddleware{requestCount, requestLatency, countResult, svc}
 	errChan := make(chan error)
 	// creating Endpoints struct
 	endpoints := movies.Endpoints{
