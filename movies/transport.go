@@ -23,10 +23,12 @@ func EncodeGRPCGetMoviesResponse(_ context.Context, r interface{}) (interface{},
 		createdOn, err  := ptypes.TimestampProto(movie.CreatedOn)
 		if err != nil {
 			//todo bring logger
+			return nil, err
 		}
 		updatedOn, err := ptypes.TimestampProto(movie.UpdatedOn)
 		if err != nil {
 			//todo bring logger
+			return nil, err
 		}
 		m := &pb.Movie{
 			Id: movie.Id,
@@ -51,11 +53,13 @@ func DecodeGRPCGetMoviesResponse(_ context.Context, r interface{}) (interface{},
 	for _, movie := range resp.Movies {
 		createdOn, err := ptypes.Timestamp(movie.Createdon)
 		if err != nil {
-			//logger.Error().Err(err).Msg("convert protobuf timestamp to time.time")
+			//todo log error
+			return nil, err
 		}
 		updatedOn, err := ptypes.Timestamp(movie.Updatedon)
 		if err != nil {
-			//svc.logger.Error().Err(err).Msg("convert protobuf timestamp to time.time")
+			//todo log error
+			return nil, err
 		}
 		m := Movie{
 			Id: movie.Id,
