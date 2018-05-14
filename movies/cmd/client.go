@@ -9,7 +9,6 @@ import (
 	"context"
 	"github.com/rs/zerolog"
 	"os"
-	"fmt"
 )
 //create new client returns GetMovies Service
 func NewGRPCClient(conn *grpc.ClientConn) movies.Service {
@@ -57,5 +56,6 @@ func callGetMovies(ctx context.Context, service movies.Service, logger zerolog.L
 	if err != nil {
 		logger.Fatal().Err(err).Msg("")
 	}
-	fmt.Println(mesg)
+	//j, err := json.Marshal(mesg)
+	logger.Info().Interface("movie", mesg).Msg("")
 }
