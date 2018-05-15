@@ -17,6 +17,7 @@ type getMoviesResponse struct {
 //Endpoints Wrapper
 type Endpoints struct {
 	GetMoviesEndpoint endpoint.Endpoint
+	GetMovieByIdEndpoint endpoint.Endpoint
 }
 
 //Make actual endpoint per Method
@@ -45,5 +46,40 @@ func (e Endpoints) GetMovies (ctx context.Context)([]Movie, error){
 	return getMoviesResp.Movies, nil
 }
 
+//model request and response
+type getMovieByIdRequest struct {
+	Id string `json:"id"`
+}
 
+type getMovieByIdResponse struct {
+	Movie Movie `json:="movie"`
+	Err string `json:="err"`
+}
+
+//Make actual endpoint per Method
+func MakeGetMovieByIdEndpoint(svc Service)(endpoint.Endpoint) {
+	return func(ctx context.Context, req interface{})(interface{}, error){
+		r := req.(getMovieByIdRequest)
+		movie, err := svc.GetMovieById(ctx, r.Id)
+		if err != nil {
+			return getMovieByIdResponse{nil, err.Error()}, nil
+		}
+		return getMovieByIdResponse{movie, ""}, nil
+	}
+}
+
+// Wrapping Endpoints as a Service implementation.
+// Will be used in gRPC client
+func (e Endpoints) GetMovieById (ctx context.Context, id string)(Movie, error){
+	var movie Movie
+	resp, err := e.GetMovieByIdEndpoint(ctx, id)
+	if err != nil {
+		return movie, err
+	}
+	getMovieByIdResp := resp.(getMovieByIdResponse)
+	if getMovieByIdResp.Err != ""{
+		return movie, errors.New(getMovieByIdResp.Err)
+	}
+	return getMovieByIdResp.Movie, nil
+}
 

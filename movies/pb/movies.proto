@@ -5,6 +5,7 @@ import "google/protobuf/timestamp.proto";
 
 service Movies {
     rpc GetMovies(Empty) returns (GetMoviesResponse) {}
+    rpc GetMovieById(GetMovieByIdRequest) returns (GetMovieByIdResponse){}
 }
 
 
@@ -27,6 +28,15 @@ message Movie {
     string userid = 5;
     google.protobuf.Timestamp createdon = 6;
     google.protobuf.Timestamp updatedon = 7;
+}
+
+message GetMovieByIdRequest {
+    string id = 1;
+}
+
+message GetMovieByIdResponse {
+    Movie movie = 1;
+    string err = 2;
 }
 
 message Empty {}

@@ -79,3 +79,76 @@ func DecodeGRPCGetMoviesResponse(_ context.Context, r interface{}) (interface{},
 	}, nil
 }
 
+//encode GetMoviesByIdRequest
+func EncodeGRPCGetMovieByIdRequest(_ context.Context, r interface{}) (interface{}, error) {
+	req := r.(getMovieByIdRequest)
+	return &pb.GetMovieByIdRequest{
+		Id: req.Id,
+	} , nil
+}
+
+//decode GetMovieByIdRequest
+func DecodeGRPCGetMovieByIdRequest(ctx context.Context, r interface{}) (interface{}, error) {
+	req := r.(*pb.GetMovieByIdRequest)
+	return getMovieByIdRequest{
+		Id: req.Id,
+	}, nil
+}
+
+// encode GetMovieById Response
+func EncodeGRPCGetMovieByIdResponse(_ context.Context, r interface{}) (interface{}, error) {
+	resp := r.(getMovieByIdResponse)
+		createdOn, err  := ptypes.TimestampProto(resp.Movie.CreatedOn)
+		if err != nil {
+			//todo bring logger
+			return nil, err
+		}
+		updatedOn, err := ptypes.TimestampProto(resp.Movie.UpdatedOn)
+		if err != nil {
+			//todo bring logger
+			return nil, err
+		}
+		m := &pb.Movie{
+			Id: resp.Movie.Id,
+			Title: resp.Movie.Title,
+			Director: resp.Movie.Director,
+			Year: resp.Movie.Year,
+			Userid: resp.Movie.Userid,
+			Createdon: createdOn ,
+			Updatedon: updatedOn,
+		}
+
+	return &pb.GetMovieByIdResponse{
+		Movie: m,
+		Err: resp.Err,
+	}, nil
+}
+
+// decode GetMovieById Response
+func DecodeGRPCGetMovieByIdResponse(_ context.Context, r interface{}) (interface{}, error) {
+	resp := r.(*pb.GetMovieByIdResponse)
+		createdOn, err := ptypes.Timestamp(resp.Movie.Createdon)
+		if err != nil {
+			//todo log error
+			return nil, err
+		}
+		updatedOn, err := ptypes.Timestamp(resp.Movie.Updatedon)
+		if err != nil {
+			//todo log error
+			return nil, err
+		}
+		m := Movie{
+			Id: resp.Movie.Id,
+			Title: resp.Movie.Title,
+			Director: resp.Movie.Director,
+			Year: resp.Movie.Year,
+			Userid: resp.Movie.Userid,
+			CreatedOn: createdOn,
+			UpdatedOn: updatedOn,
+		}
+
+	return getMovieByIdResponse{
+		Movie: m,
+		Err: resp.Err,
+	}, nil
+}

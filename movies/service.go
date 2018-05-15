@@ -9,6 +9,7 @@ import (
 
 type Service interface {
 	GetMovies(ctx context.Context)([]Movie, error)
+	GetMovieById(ctx context.Context, id string) (Movie, error)
 }
 
 //implementation with database and logger
@@ -41,4 +42,15 @@ func (m moviesService) GetMovies (ctx context.Context) ([]Movie, error) {
 		movies = append(movies, *movie)
 	}
 	return movies, nil
+}
+
+//implementation
+func (m moviesService) GetMovieById (ctx context.Context, id string)(Movie, error) {
+	var movie Movie
+	rows := m.db.QueryRow("select * from movies where id = $1", id)
+	err := rows.Scan(&movie.Id, &movie.Title, &movie.Director, &movie.Year, &movie.Userid, &movie.CreatedOn, &movie.UpdatedOn)
+	if err != nil {
+		return movie, err
+	}
+	return movie, nil
 }
