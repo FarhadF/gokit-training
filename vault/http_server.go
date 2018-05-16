@@ -6,6 +6,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"encoding/json"
 )
+
 //func (e Endpoints) register (r *httprouter.Router) {
 //	r.POST("/hash", e.handleHash)
 //	r.POST("/validate", e.handleValidate)
@@ -29,7 +30,7 @@ import (
 }*/
 
 //using http router, register func will do the routing path registration
-func (e Endpoints) Register (r *httprouter.Router) {
+func (e Endpoints) Register(r *httprouter.Router) {
 	r.Handle("POST", "/hash", e.HandleHashPost)
 	r.Handle("POST", "/validate", e.HandleValidatePost)
 }
@@ -50,13 +51,13 @@ func (e Endpoints) HandleHashPost(w http.ResponseWriter, r *http.Request, _ http
 }
 
 //each method needs a http handler
-func(e Endpoints) HandleValidatePost(w http.ResponseWriter,r *http.Request, _ httprouter.Params) {
+func (e Endpoints) HandleValidatePost(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	decodeValidateReq, err := decodeValidateRequest(e.Ctx, r)
 	if err != nil {
 		respondError(w, 500, err)
 		return
 	}
-	resp,err := e.ValidateEndpoint(e.Ctx, decodeValidateReq.(validateRequest))
+	resp, err := e.ValidateEndpoint(e.Ctx, decodeValidateReq.(validateRequest))
 	if err != nil {
 		respondError(w, 500, err)
 		return

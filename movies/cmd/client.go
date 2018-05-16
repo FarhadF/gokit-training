@@ -10,6 +10,7 @@ import (
 	"github.com/rs/zerolog"
 	"os"
 )
+
 //create new client returns GetMovies Service
 func NewGRPCClient(conn *grpc.ClientConn) movies.Service {
 	var getMoviesEndpoint = grpctransport.NewClient(
@@ -37,28 +38,26 @@ func NewGRPCClient(conn *grpc.ClientConn) movies.Service {
 	}
 }
 
-
-func main(){
+func main() {
 	var (
 		grpcAddr string
-		movieId string
+		movieId  string
 		newMovie bool
-		title string
+		title    string
 		director string
-		year string
-		userId string
+		year     string
+		userId   string
 	)
-	flag.StringVarP(&grpcAddr,"addr", "a",":8081","gRPC address")
-	flag.StringVarP(&movieId, "id", "i","","movieId")
-	flag.StringVarP(&title, "title", "t","","title")
-	flag.StringVarP(&director, "director", "d","","director")
-	flag.StringVarP(&year, "year", "y","","year")
-	flag.StringVarP(&userId, "userid", "u","","userId")
+	flag.StringVarP(&grpcAddr, "addr", "a", ":8081", "gRPC address")
+	flag.StringVarP(&movieId, "id", "i", "", "movieId")
+	flag.StringVarP(&title, "title", "t", "", "title")
+	flag.StringVarP(&director, "director", "d", "", "director")
+	flag.StringVarP(&year, "year", "y", "", "year")
+	flag.StringVarP(&userId, "userid", "u", "", "userId")
 	flag.BoolVarP(&newMovie, "newmovie", "n", false, "newMovie")
 	//flag.StringVarP(&requestType, "requestType", "r", "word", "Should be word, sentence or paragraph")
 	//flag.IntVarP(&min,"min", "m", 5, "minimum value")
 	//flag.IntVarP(&max,"Max", "M", 10, "Maximum value")
-
 
 	flag.Parse()
 	logger := zerolog.New(os.Stderr).With().Timestamp().Logger()
@@ -70,7 +69,6 @@ func main(){
 	defer conn.Close()
 	moviesService := NewGRPCClient(conn)
 
-
 	callGetMovies(ctx, moviesService, logger)
 	if movieId != "" {
 		callGetMovieById(ctx, movieId, moviesService, logger)
@@ -79,7 +77,6 @@ func main(){
 	if newMovie != false && title != "" && director != "" && year != "" && userId != "" {
 		callNewmovie(ctx, title, director, year, userId, moviesService, logger)
 	}
-
 
 }
 

@@ -23,11 +23,11 @@ func main() {
 	var (
 		httpAddr string
 		gRPCAddr string
-		console bool
+		console  bool
 	)
-	flag.StringVarP(&httpAddr, "http", "H",":8082","http listen address")
-	flag.StringVarP(&gRPCAddr, "grpc", "G",":8081","gRPC listen address")
-	flag.BoolVarP(&console, "console", "c", false, "turns on pretty console logging" )
+	flag.StringVarP(&httpAddr, "http", "H", ":8082", "http listen address")
+	flag.StringVarP(&gRPCAddr, "grpc", "G", ":8081", "gRPC listen address")
+	flag.BoolVarP(&console, "console", "c", false, "turns on pretty console logging")
 	flag.Parse()
 	ctx := context.Background()
 	//zerolog
@@ -84,9 +84,9 @@ func main() {
 			// This is incredibly laborious when we want to add e.g. rate
 			// limiters. It would be better to bundle all the endpoints up,
 			// somehow... or, use code generation, of course.
-			HashEndpoint: vault.MakeHashEndpoint(svc),
-			ValidateEndpoint:    vault.MakeValidateEndpoint(svc),
-			}.Register(r)
+			HashEndpoint:     vault.MakeHashEndpoint(svc),
+			ValidateEndpoint: vault.MakeValidateEndpoint(svc),
+		}.Register(r)
 		errChan <- http.ListenAndServe(httpAddr, r)
 	}()
 	// GRPC transport

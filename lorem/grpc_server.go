@@ -12,7 +12,7 @@ type grpcServer struct {
 }
 
 // implement LoremServer Interface in lorem.pb.go
-func (s *grpcServer) Lorem(ctx context.Context, r *pb.LoremRequest)(*pb.LoremResponse, error) {
+func (s *grpcServer) Lorem(ctx context.Context, r *pb.LoremRequest) (*pb.LoremResponse, error) {
 	_, resp, err := s.lorem.ServeGRPC(ctx, r)
 	if err != nil {
 		return nil, err

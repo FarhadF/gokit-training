@@ -8,13 +8,13 @@ import (
 
 //grpcServer Wrapper
 type grpcServer struct {
-	getMovies grpctransport.Handler
+	getMovies    grpctransport.Handler
 	getMovieById grpctransport.Handler
-	newMovie grpctransport.Handler
+	newMovie     grpctransport.Handler
 }
 
 // implement getMovies server Interface in movies.pb.go
-func (s *grpcServer) GetMovies(ctx context.Context, r *pb.Empty)(*pb.GetMoviesResponse, error) {
+func (s *grpcServer) GetMovies(ctx context.Context, r *pb.Empty) (*pb.GetMoviesResponse, error) {
 	_, resp, err := s.getMovies.ServeGRPC(ctx, r)
 	if err != nil {
 		return nil, err
@@ -23,7 +23,7 @@ func (s *grpcServer) GetMovies(ctx context.Context, r *pb.Empty)(*pb.GetMoviesRe
 }
 
 // implement getMovieById server Interface in movies.pb.go
-func (s *grpcServer) GetMovieById(ctx context.Context, r *pb.GetMovieByIdRequest)(*pb.GetMovieByIdResponse, error) {
+func (s *grpcServer) GetMovieById(ctx context.Context, r *pb.GetMovieByIdRequest) (*pb.GetMovieByIdResponse, error) {
 	_, resp, err := s.getMovieById.ServeGRPC(ctx, r)
 	if err != nil {
 		return nil, err
@@ -32,7 +32,7 @@ func (s *grpcServer) GetMovieById(ctx context.Context, r *pb.GetMovieByIdRequest
 }
 
 // implement NewMovie server Interface in movies.pb.go
-func (s *grpcServer) NewMovie(ctx context.Context, r *pb.NewMovieRequest)(*pb.NewMovieResponse, error) {
+func (s *grpcServer) NewMovie(ctx context.Context, r *pb.NewMovieRequest) (*pb.NewMovieResponse, error) {
 	_, resp, err := s.newMovie.ServeGRPC(ctx, r)
 	if err != nil {
 		return nil, err
@@ -60,4 +60,3 @@ func NewGRPCServer(ctx context.Context, endpoint Endpoints) pb.MoviesServer {
 		),
 	}
 }
-

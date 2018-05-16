@@ -20,19 +20,19 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func main(){
+func main() {
 	//zerolog
 	logger := zerolog.New(os.Stderr).With().Timestamp().Logger()
 	var (
-		console bool
+		console  bool
 		httpAddr string
 		gRPCAddr string
 	)
-	flag.StringVarP(&httpAddr, "http", "H",":8082","http listen address")
-	flag.StringVarP(&gRPCAddr,"grpc", "g", ":8081", "GRPC Address")
-	flag.BoolVarP(&console, "console", "c", false, "turns on pretty console logging" )
+	flag.StringVarP(&httpAddr, "http", "H", ":8082", "http listen address")
+	flag.StringVarP(&gRPCAddr, "grpc", "g", ":8081", "GRPC Address")
+	flag.BoolVarP(&console, "console", "c", false, "turns on pretty console logging")
 	flag.Parse()
-	logger.Info().Msg("starting grpc server at"+ string(gRPCAddr))
+	logger.Info().Msg("starting grpc server at" + string(gRPCAddr))
 	if console {
 		logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	}
@@ -71,7 +71,7 @@ func main(){
 		//httprouter initialization
 		router := httprouter.New()
 		//handler will be used for net/http handle compatibility
-		router.Handler("GET","/metrics", promhttp.Handler())
+		router.Handler("GET", "/metrics", promhttp.Handler())
 		errChan <- http.ListenAndServe(httpAddr, router)
 	}()
 	//Handle os signals
@@ -80,6 +80,5 @@ func main(){
 		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
 		errChan <- fmt.Errorf("%s", <-c)
 	}()
-	logger.Error().Err(<- errChan).Msg("")
+	logger.Error().Err(<-errChan).Msg("")
 }
-

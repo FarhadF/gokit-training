@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"encoding/json"
 )
+
 //Business logic as interface
 type Service interface {
 	Hash(ctx context.Context, password string) (string, error)
@@ -14,7 +15,6 @@ type Service interface {
 
 //implementation with empty struct (stateless)
 type vaultService struct {
-
 }
 
 //constructor - we can later add initialization if needed
@@ -32,7 +32,7 @@ func (vaultService) Hash(ctx context.Context, password string) (string, error) {
 }
 
 //implementation
-func (vaultService) Validate(ctx context.Context, password string, hash string)(bool, error) {
+func (vaultService) Validate(ctx context.Context, password string, hash string) (bool, error) {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	if err != nil {
 		return false, err
@@ -43,12 +43,12 @@ func (vaultService) Validate(ctx context.Context, password string, hash string)(
 
 //request and responses should be modeled, as well as decode function for each request
 type hashRequest struct {
-	Password 	string 	`json:"password"`
+	Password string `json:"password"`
 }
 
 type hashResponse struct {
-	Hash 	string 	`json:"hash"`
-	Err 	string 	`json:"err,omitempty"`
+	Hash string `json:"hash"`
+	Err  string `json:"err,omitempty"`
 }
 
 func decodeHashRequest(ctx context.Context, r *http.Request) (interface{}, error) {
@@ -61,16 +61,16 @@ func decodeHashRequest(ctx context.Context, r *http.Request) (interface{}, error
 }
 
 type validateRequest struct {
-	Password 	string `json:"password"`
-	Hash 	string 		`json:"hash"`
+	Password string `json:"password"`
+	Hash     string `json:"hash"`
 }
 
 type validateResponse struct {
-	Valid bool `json:"valid"`
-	Err string `json:"err,omitempty"`
+	Valid bool   `json:"valid"`
+	Err   string `json:"err,omitempty"`
 }
 
-func decodeValidateRequest(ctx context.Context, r *http.Request)(interface{}, error) {
+func decodeValidateRequest(ctx context.Context, r *http.Request) (interface{}, error) {
 	var req validateRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
@@ -83,4 +83,3 @@ func decodeValidateRequest(ctx context.Context, r *http.Request)(interface{}, er
 func encodeResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
 	return json.NewEncoder(w).Encode(response)
 }
-

@@ -9,14 +9,14 @@ import (
 )
 
 type Service interface {
-	GetMovies(ctx context.Context)([]Movie, error)
+	GetMovies(ctx context.Context) ([]Movie, error)
 	GetMovieById(ctx context.Context, id string) (Movie, error)
 	NewMovie(ctx context.Context, title string, director string, year string, userid string) (string, error)
 }
 
 //implementation with database and logger
 type moviesService struct {
-	db *sql.DB
+	db     *sql.DB
 	logger zerolog.Logger
 }
 
@@ -29,7 +29,7 @@ func NewService(db *sql.DB, logger zerolog.Logger) Service {
 }
 
 //implementation
-func (m moviesService) GetMovies (ctx context.Context) ([]Movie, error) {
+func (m moviesService) GetMovies(ctx context.Context) ([]Movie, error) {
 	rows, err := m.db.Query("select * from movies")
 	if err != nil {
 		return nil, err
@@ -47,7 +47,7 @@ func (m moviesService) GetMovies (ctx context.Context) ([]Movie, error) {
 }
 
 //implementation
-func (m moviesService) GetMovieById (ctx context.Context, id string)(Movie, error) {
+func (m moviesService) GetMovieById(ctx context.Context, id string) (Movie, error) {
 	var movie Movie
 	rows := m.db.QueryRow("select * from movies where id = $1", id)
 	err := rows.Scan(&movie.Id, &movie.Title, &movie.Director, &movie.Year, &movie.Userid, &movie.CreatedOn, &movie.UpdatedOn)
@@ -58,7 +58,7 @@ func (m moviesService) GetMovieById (ctx context.Context, id string)(Movie, erro
 }
 
 //implementation
-func (m moviesService) NewMovie (ctx context.Context, title string, director string, year string, userid string) (string, error) {
+func (m moviesService) NewMovie(ctx context.Context, title string, director string, year string, userid string) (string, error) {
 	rows, err := m.db.Query("select * from movies where title='" + title + "'")
 	if err != nil {
 		return "", err

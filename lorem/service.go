@@ -7,11 +7,11 @@ import (
 )
 
 type Service interface {
-	Lorem(ctx context.Context, requestType string, min int, max int)(string, error)
+	Lorem(ctx context.Context, requestType string, min int, max int) (string, error)
 }
 
 //implementation with empty struct (stateless)
-type loremService struct {}
+type loremService struct{}
 
 //constructor - we can later add initialization if needed
 func NewService() Service {
@@ -19,7 +19,7 @@ func NewService() Service {
 }
 
 //implementation
-func (loremService) Lorem (ctx context.Context, requestType string, min int, max int) (string, error) {
+func (loremService) Lorem(ctx context.Context, requestType string, min int, max int) (string, error) {
 	switch requestType {
 	case "word":
 		return gl.Word(min, max), nil
@@ -31,8 +31,3 @@ func (loremService) Lorem (ctx context.Context, requestType string, min int, max
 		return "", errors.New("request type should be word, sentence or paragraph")
 	}
 }
-
-
-
-
-

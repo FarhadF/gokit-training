@@ -16,7 +16,7 @@ import (
 
 func main() {
 	var (
-		grpcAddr = flag.String("addr", ":8081",	"gRPC address")
+		grpcAddr = flag.String("addr", ":8081", "gRPC address")
 	)
 	flag.Parse()
 	ctx := context.Background()
@@ -60,7 +60,7 @@ func New(conn *grpc.ClientConn) vault.Service {
 		pb.ValidateResponse{},
 	).Endpoint()
 	return vault.Endpoints{
-		HashEndpoint: hashEndpoint,
+		HashEndpoint:     hashEndpoint,
 		ValidateEndpoint: validateEndpoint,
 	}
 }

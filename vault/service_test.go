@@ -8,7 +8,7 @@ import (
 func TestHashService(t *testing.T) {
 	svc := NewService()
 	ctx := context.Background()
-	h,err := svc.Hash(ctx, "password")
+	h, err := svc.Hash(ctx, "password")
 	if err != nil {
 		t.Errorf("Hash: %s", err)
 	}

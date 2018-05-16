@@ -2,7 +2,8 @@ syntax = "proto3";
 package pb;
 
 service Lorem {
-    rpc Lorem(LoremRequest) returns (LoremResponse) {}
+    rpc Lorem (LoremRequest) returns (LoremResponse) {
+    }
 }
 
 message LoremRequest {

@@ -14,7 +14,6 @@ type InstrumentingMiddleware struct {
 	Next           Service
 }
 
-
 func (mw InstrumentingMiddleware) Hash(ctx context.Context, password string) (output string, err error) {
 	defer func(begin time.Time) {
 		lvs := []string{"method", "hash", "error", fmt.Sprint(err != nil)}
