@@ -10,6 +10,7 @@ import (
 type grpcServer struct {
 	getMovies grpctransport.Handler
 	getMovieById grpctransport.Handler
+	newMovie grpctransport.Handler
 }
 
 // implement getMovies server Interface in movies.pb.go
@@ -30,6 +31,15 @@ func (s *grpcServer) GetMovieById(ctx context.Context, r *pb.GetMovieByIdRequest
 	return resp.(*pb.GetMovieByIdResponse), nil
 }
 
+// implement NewMovie server Interface in movies.pb.go
+func (s *grpcServer) NewMovie(ctx context.Context, r *pb.NewMovieRequest)(*pb.NewMovieResponse, error) {
+	_, resp, err := s.newMovie.ServeGRPC(ctx, r)
+	if err != nil {
+		return nil, err
+	}
+	return resp.(*pb.NewMovieResponse), nil
+}
+
 // create new grpc server
 func NewGRPCServer(ctx context.Context, endpoint Endpoints) pb.MoviesServer {
 	return &grpcServer{
@@ -43,8 +53,11 @@ func NewGRPCServer(ctx context.Context, endpoint Endpoints) pb.MoviesServer {
 			DecodeGRPCGetMovieByIdRequest,
 			EncodeGRPCGetMovieByIdResponse,
 		),
-
-
+		grpctransport.NewServer(
+			endpoint.NewMovieEndpoint,
+			DecodeGRPCNewMovieRequest,
+			EncodeGRPCNewMovieResponse,
+		),
 	}
 }
 

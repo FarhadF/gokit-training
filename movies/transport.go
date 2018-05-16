@@ -152,3 +152,42 @@ func DecodeGRPCGetMovieByIdResponse(_ context.Context, r interface{}) (interface
 		Err: resp.Err,
 	}, nil
 }
+
+//encode NewMovieRequest
+func EncodeGRPCNewMovieRequest(_ context.Context, r interface{}) (interface{}, error) {
+	req := r.(newMovieRequest)
+	return &pb.NewMovieRequest{
+		Title: req.Title,
+		Director: req.Director,
+		Year: req.Year,
+		Userid: req.Userid,
+	} , nil
+}
+
+//decode NewMovieRequest
+func DecodeGRPCNewMovieRequest(ctx context.Context, r interface{}) (interface{}, error) {
+	req := r.(*pb.NewMovieRequest)
+	return newMovieRequest{
+		Title: req.Title,
+		Director: req.Director,
+		Year: req.Year,
+		Userid: req.Userid,
+	}, nil
+}
+
+// Encode and Decode NewMovieResponse
+func EncodeGRPCNewMovieResponse(_ context.Context, r interface{}) (interface{}, error) {
+	resp := r.(newMovieResponse)
+	return &pb.NewMovieResponse{
+		Id: resp.Id,
+		Err: resp.Err,
+	}, nil
+}
+
+func DecodeGRPCNewMovieResponse(_ context.Context, r interface{}) (interface{}, error) {
+	resp := r.(*pb.NewMovieResponse)
+	return newMovieResponse{
+		Id: resp.Id,
+		Err: resp.Err,
+	}, nil
+}

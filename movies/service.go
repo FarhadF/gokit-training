@@ -5,11 +5,13 @@ import (
 
 	"database/sql"
 	"github.com/rs/zerolog"
+	"errors"
 )
 
 type Service interface {
 	GetMovies(ctx context.Context)([]Movie, error)
 	GetMovieById(ctx context.Context, id string) (Movie, error)
+	NewMovie(ctx context.Context, title string, director string, year string, userid string) (string, error)
 }
 
 //implementation with database and logger
@@ -53,4 +55,26 @@ func (m moviesService) GetMovieById (ctx context.Context, id string)(Movie, erro
 		return movie, err
 	}
 	return movie, nil
+}
+
+//implementation
+func (m moviesService) NewMovie (ctx context.Context, title string, director string, year string, userid string) (string, error) {
+	rows, err := m.db.Query("select * from movies where title='" + title + "'")
+	if err != nil {
+		return "", err
+	}
+	if !rows.Next() {
+		var id string
+		err := m.db.QueryRow("insert into movies (title, director, year, userid) values($1,$2,$3,$4) returning id", title, director, year, userid).Scan(&id)
+		//res, err := stmt.Exec(movie.Title,movie.Director, movie.Year, movie.Userid)
+		//id, err := res.LastInsertId()
+		if err != nil {
+			return "", err
+		}
+		//return strconv.FormatInt(id, 10), nil
+		return id, nil
+	} else {
+
+		return "", errors.New("movie already exists")
+	}
 }

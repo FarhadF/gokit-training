@@ -6,6 +6,7 @@ import "google/protobuf/timestamp.proto";
 service Movies {
     rpc GetMovies(Empty) returns (GetMoviesResponse) {}
     rpc GetMovieById(GetMovieByIdRequest) returns (GetMovieByIdResponse){}
+    rpc NewMovie(NewMovieRequest) returns (NewMovieResponse){}
 }
 
 
@@ -36,6 +37,18 @@ message GetMovieByIdRequest {
 
 message GetMovieByIdResponse {
     Movie movie = 1;
+    string err = 2;
+}
+
+message NewMovieRequest {
+    string  title = 1;
+    string director = 2;
+    string year = 3;
+    string userid = 4;
+}
+
+message NewMovieResponse {
+    string id = 1;
     string err = 2;
 }
 

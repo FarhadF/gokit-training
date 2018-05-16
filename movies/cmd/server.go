@@ -38,8 +38,6 @@ func main(){
 	}
 	ctx := context.Background()
 
-
-
 	// init movies service
 	var svc movies.Service
 	db, err := sql.Open("postgres", "postgresql://app_user@localhost:26257/app_database?sslmode=disable")
@@ -54,6 +52,7 @@ func main(){
 	endpoints := movies.Endpoints{
 		movies.MakeGetMoviesEndpoint(svc),
 		movies.MakeGetMovieByIdEndpoint(svc),
+		movies.MakeNewMovieEndpoint(svc),
 	}
 	//execute grpc server
 	go func() {

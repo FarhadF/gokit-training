@@ -24,9 +24,16 @@ func NewGRPCClient(conn *grpc.ClientConn) movies.Service {
 		movies.DecodeGRPCGetMovieByIdResponse,
 		pb.GetMovieByIdResponse{},
 	).Endpoint()
+	var newMovieEndpoint = grpctransport.NewClient(
+		conn, "pb.Movies", "NewMovie",
+		movies.EncodeGRPCNewMovieRequest,
+		movies.DecodeGRPCNewMovieResponse,
+		pb.NewMovieResponse{},
+	).Endpoint()
 	return movies.Endpoints{
 		getMoviesEndpoint,
 		getMovieByIdEndpoint,
+		newMovieEndpoint,
 	}
 }
 
@@ -35,9 +42,19 @@ func main(){
 	var (
 		grpcAddr string
 		movieId string
+		newMovie bool
+		title string
+		director string
+		year string
+		userId string
 	)
 	flag.StringVarP(&grpcAddr,"addr", "a",":8081","gRPC address")
 	flag.StringVarP(&movieId, "id", "i","","movieId")
+	flag.StringVarP(&title, "title", "t","","title")
+	flag.StringVarP(&director, "director", "d","","director")
+	flag.StringVarP(&year, "year", "y","","year")
+	flag.StringVarP(&userId, "userid", "u","","userId")
+	flag.BoolVarP(&newMovie, "newmovie", "n", false, "newMovie")
 	//flag.StringVarP(&requestType, "requestType", "r", "word", "Should be word, sentence or paragraph")
 	//flag.IntVarP(&min,"min", "m", 5, "minimum value")
 	//flag.IntVarP(&max,"Max", "M", 10, "Maximum value")
@@ -51,13 +68,16 @@ func main(){
 		logger.Fatal().Err(err).Msg("")
 	}
 	defer conn.Close()
-	getMoviesService := NewGRPCClient(conn)
+	moviesService := NewGRPCClient(conn)
 
 
-	callGetMovies(ctx, getMoviesService, logger)
+	callGetMovies(ctx, moviesService, logger)
 	if movieId != "" {
-		callGetMovieById(ctx, movieId, getMoviesService, logger)
+		callGetMovieById(ctx, movieId, moviesService, logger)
 
+	}
+	if newMovie != false && title != "" && director != "" && year != "" && userId != "" {
+		callNewmovie(ctx, title, director, year, userId, moviesService, logger)
 	}
 
 
@@ -79,4 +99,11 @@ func callGetMovieById(ctx context.Context, id string, service movies.Service, lo
 		logger.Fatal().Err(err).Msg("")
 	}
 	logger.Info().Interface("movie", mesg).Msg("")
+}
+func callNewmovie(ctx context.Context, title string, director string, year string, userId string, service movies.Service, logger zerolog.Logger) {
+	mesg, err := service.NewMovie(ctx, title, director, year, userId)
+	if err != nil {
+		logger.Fatal().Err(err).Msg("")
+	}
+	logger.Info().Str("id", mesg).Msg("")
 }
