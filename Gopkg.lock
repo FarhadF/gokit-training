@@ -63,6 +63,15 @@
   revision = "b84e30acd515aadc4b783ad4ff83aff3299bdfe0"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/lib/pq"
+  packages = [
+    ".",
+    "oid"
+  ]
+  revision = "d34b9ff171c21ad295489235aec8b6626023cd04"
+
+[[projects]]
   name = "github.com/matttproud/golang_protobuf_extensions"
   packages = ["pbutil"]
   revision = "3247c84500bff8d9fb6d579d800f20b3e091582c"
@@ -205,6 +214,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "1dc742d56f1626b25166e434613d6fa9065f77e0079cbacc11bce9852c6cb3ef"
+  inputs-digest = "010b277cb3a42bb17fbe799b852bf892f543960c26a0f4a700594670fb9e99e6"
   solver-name = "gps-cdcl"
   solver-version = 1
