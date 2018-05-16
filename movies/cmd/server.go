@@ -53,6 +53,7 @@ func main(){
 	// creating Endpoints struct
 	endpoints := movies.Endpoints{
 		movies.MakeGetMoviesEndpoint(svc),
+		movies.MakeGetMovieByIdEndpoint(svc),
 	}
 	//execute grpc server
 	go func() {

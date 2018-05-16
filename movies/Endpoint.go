@@ -62,7 +62,7 @@ func MakeGetMovieByIdEndpoint(svc Service)(endpoint.Endpoint) {
 		r := req.(getMovieByIdRequest)
 		movie, err := svc.GetMovieById(ctx, r.Id)
 		if err != nil {
-			return getMovieByIdResponse{nil, err.Error()}, nil
+			return getMovieByIdResponse{movie, err.Error()}, nil
 		}
 		return getMovieByIdResponse{movie, ""}, nil
 	}
@@ -71,8 +71,11 @@ func MakeGetMovieByIdEndpoint(svc Service)(endpoint.Endpoint) {
 // Wrapping Endpoints as a Service implementation.
 // Will be used in gRPC client
 func (e Endpoints) GetMovieById (ctx context.Context, id string)(Movie, error){
+	req := getMovieByIdRequest{
+		Id: id,
+	}
 	var movie Movie
-	resp, err := e.GetMovieByIdEndpoint(ctx, id)
+	resp, err := e.GetMovieByIdEndpoint(ctx, req)
 	if err != nil {
 		return movie, err
 	}
