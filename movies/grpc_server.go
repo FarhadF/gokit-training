@@ -43,17 +43,17 @@ func (s *grpcServer) NewMovie(ctx context.Context, r *pb.NewMovieRequest) (*pb.N
 // create new grpc server
 func NewGRPCServer(ctx context.Context, endpoint Endpoints) pb.MoviesServer {
 	return &grpcServer{
-		grpctransport.NewServer(
+		getMovies: grpctransport.NewServer(
 			endpoint.GetMoviesEndpoint,
 			DecodeGRPCGetMoviesRequest,
 			EncodeGRPCGetMoviesResponse,
 		),
-		grpctransport.NewServer(
+		getMovieById: grpctransport.NewServer(
 			endpoint.GetMovieByIdEndpoint,
 			DecodeGRPCGetMovieByIdRequest,
 			EncodeGRPCGetMovieByIdResponse,
 		),
-		grpctransport.NewServer(
+		newMovie: grpctransport.NewServer(
 			endpoint.NewMovieEndpoint,
 			DecodeGRPCNewMovieRequest,
 			EncodeGRPCNewMovieResponse,
