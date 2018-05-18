@@ -68,8 +68,9 @@ func main() {
 	}
 	defer conn.Close()
 	moviesService := NewGRPCClient(conn)
-
-	callGetMovies(ctx, moviesService, logger)
+	if movieId == "" && newMovie == false{
+		callGetMovies(ctx, moviesService, logger)
+	}
 	if movieId != "" {
 		callGetMovieById(ctx, movieId, moviesService, logger)
 
