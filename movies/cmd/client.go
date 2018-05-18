@@ -9,6 +9,7 @@ import (
 	"context"
 	"github.com/rs/zerolog"
 	"os"
+	"strings"
 )
 
 //create new client returns GetMovies Service
@@ -51,7 +52,7 @@ func main() {
 	flag.StringVarP(&grpcAddr, "addr", "a", ":8081", "gRPC address")
 	flag.StringVarP(&movieId, "id", "i", "", "movieId")
 	flag.StringVarP(&title, "title", "t", "", "title")
-	flag.StringVarP(&director, "director", "d", "", "director")
+	flag.StringVarP(&director, "director", "d", "", "director(s) comma seperated")
 	flag.StringVarP(&year, "year", "y", "", "year")
 	flag.StringVarP(&userId, "userid", "u", "", "userId")
 	flag.BoolVarP(&newMovie, "newmovie", "n", false, "newMovie")
@@ -76,7 +77,12 @@ func main() {
 
 	}
 	if newMovie != false && title != "" && director != "" && year != "" && userId != "" {
-		callNewmovie(ctx, title, director, year, userId, moviesService, logger)
+		dir := strings.Split(director, ",")
+		var dirSlice []string
+		for _, d := range dir {
+			dirSlice = append(dirSlice, d)
+		}
+		callNewmovie(ctx, title, dirSlice, year, userId, moviesService, logger)
 	}
 
 }
@@ -98,10 +104,12 @@ func callGetMovieById(ctx context.Context, id string, service movies.Service, lo
 	}
 	logger.Info().Interface("movie", mesg).Msg("")
 }
-func callNewmovie(ctx context.Context, title string, director string, year string, userId string, service movies.Service, logger zerolog.Logger) {
+
+func callNewmovie(ctx context.Context, title string, director []string, year string, userId string, service movies.Service, logger zerolog.Logger) {
 	mesg, err := service.NewMovie(ctx, title, director, year, userId)
 	if err != nil {
 		logger.Fatal().Err(err).Msg("")
 	}
 	logger.Info().Str("id", mesg).Msg("")
 }
+

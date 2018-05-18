@@ -88,7 +88,7 @@ func (e Endpoints) GetMovieById(ctx context.Context, id string) (Movie, error) {
 //model request and response
 type newMovieRequest struct {
 	Title    string `json:"title"`
-	Director string `json:"director"`
+	Director []string `json:"director"`
 	Year     string `json:"year"`
 	Userid   string `json:"userid"`
 }
@@ -112,7 +112,7 @@ func MakeNewMovieEndpoint(svc Service) (endpoint.Endpoint) {
 
 // Wrapping Endpoints as a Service implementation.
 // Will be used in gRPC client
-func (e Endpoints) NewMovie(ctx context.Context, title string, director string, year string, userid string) (string, error) {
+func (e Endpoints) NewMovie(ctx context.Context, title string, director []string, year string, userid string) (string, error) {
 	req := newMovieRequest{
 		Title:    title,
 		Director: director,
