@@ -22,7 +22,7 @@ import (
 
 func main() {
 	//zerolog
-	logger := zerolog.New(os.Stderr).With().Timestamp().Logger()
+	logger := zerolog.New(os.Stderr).With().Timestamp().Caller().Logger()
 	var (
 		console  bool
 		httpAddr string

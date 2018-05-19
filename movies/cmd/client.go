@@ -61,7 +61,7 @@ func main() {
 	//flag.IntVarP(&max,"Max", "M", 10, "Maximum value")
 
 	flag.Parse()
-	logger := zerolog.New(os.Stderr).With().Timestamp().Logger()
+	logger := zerolog.New(os.Stderr).With().Timestamp().Caller().Logger()
 	ctx := context.Background()
 	conn, err := grpc.Dial(grpcAddr, grpc.WithInsecure())
 	if err != nil {
