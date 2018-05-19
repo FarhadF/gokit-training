@@ -133,4 +133,3 @@ func callDeleteMovie(ctx context.Context, id string, service movies.Service, log
 		logger.Info().Msg("Delete Successful for id: " + id)
 	}
 }
-

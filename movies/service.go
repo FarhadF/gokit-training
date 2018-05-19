@@ -6,6 +6,9 @@ import (
 	"database/sql"
 	"github.com/rs/zerolog"
 	"errors"
+	"time"
+	"fmt"
+	"reflect"
 )
 
 type Service interface {
@@ -43,6 +46,9 @@ func (m moviesService) GetMovies(ctx context.Context) ([]Movie, error) {
 			return nil, err
 		}
 		r, err := m.db.Query("select director from movie_directors where movie_id=$1", movie.Id)
+		if err != nil {
+			return nil, err
+		}
 		var director []string
 		for r.Next()	{
 			var d string
@@ -129,5 +135,49 @@ func (m moviesService) DeleteMovie(ctx context.Context, id string) error {
 		return err
 	}
 	_, err = m.db.Query("delete from movie_directors where movie_id = $1", id)
+	return nil
+}
+
+//implementation
+func (m moviesService) UpdateMovie(ctx context.Context, id string, title string, director []string, year string, userid string) error {
+	rows, err := m.db.Query("select * from movies where id='" + id + "'")
+	if err != nil {
+		return err
+	}
+	if !rows.Next() {
+		return errors.New("movie does not exist")
+	}
+	updatedon := time.Now()
+	fmt.Println(updatedon.Format("2006-01-02 15:04:05.999999"))
+	_, err = m.db.Query("update movies set title = $1, year = $2, updatedon = $3 where id = $4", title, director,
+		year, id, updatedon.Format("2006-01-02 15:04:05.999999"))
+	if err != nil {
+		return err
+	}
+	r, err := m.db.Query("select director from movie_directors where movie_id=$1", id)
+	var dir []string
+	for r.Next()	{
+		var d string
+		err = r.Scan(&d)
+		if err != nil {
+			return err
+		}
+		dir = append(dir, d)
+	}
+	if reflect.DeepEqual(dir, director) {
+		return nil
+	}
+	_, err = m.db.Query("delete from movie_directors where movie_id = $1", id)
+	if err != nil {
+		//todo: rollback
+		return err
+	}
+	for d := range dir {
+		_, err = m.db.Query("insert into movie_directors (movie_id, director) values($1,$2)", id, d)
+		if err != nil {
+			//todo:rollback
+			return err
+		}
+	}
 	return nil
 }
