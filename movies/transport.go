@@ -218,3 +218,34 @@ func DecodeGRPCNewMovieResponse(_ context.Context, r interface{}) (interface{}, 
 		Err: resp.Err,
 	}, nil
 }
+
+//encode deleteMovieRequest
+func EncodeGRPCDeleteMovieRequest(_ context.Context, r interface{}) (interface{}, error) {
+	req := r.(deleteMovieRequest)
+	return &pb.DeleteMovieRequest{
+		Id: req.Id,
+	}, nil
+}
+
+//decode DeleteMovieRequest
+func DecodeGRPCDeleteMovieRequest(ctx context.Context, r interface{}) (interface{}, error) {
+	req := r.(*pb.DeleteMovieRequest)
+	return deleteMovieRequest{
+		Id: req.Id,
+	}, nil
+}
+
+// Encode and Decode DeleteMovieResponse
+func EncodeGRPCDeleteMovieResponse(_ context.Context, r interface{}) (interface{}, error) {
+	resp := r.(deleteMovieResponse)
+	return &pb.DeleteMovieResponse{
+		Err: resp.Err,
+	}, nil
+}
+
+func DecodeGRPCDeleteMovieResponse(_ context.Context, r interface{}) (interface{}, error) {
+	resp := r.(*pb.DeleteMovieResponse)
+	return deleteMovieResponse{
+		Err: resp.Err,
+	}, nil
+}

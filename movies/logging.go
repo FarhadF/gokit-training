@@ -36,3 +36,11 @@ func (mw LoggingMiddleware) NewMovie(ctx context.Context, title string, director
 	output, err = mw.Next.NewMovie(ctx, title, director, year, userid)
 	return
 }
+
+func (mw LoggingMiddleware) DeleteMovie(ctx context.Context, id string) (err error) {
+	defer func(begin time.Time) {
+		mw.Logger.Info().Str("method", "DeleteMovie").Err(err).Dur("took", time.Since(begin)).Msg("")
+	}(time.Now())
+	err = mw.Next.DeleteMovie(ctx, id)
+	return
+}

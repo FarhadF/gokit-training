@@ -12,6 +12,7 @@ type Service interface {
 	GetMovies(ctx context.Context) ([]Movie, error)
 	GetMovieById(ctx context.Context, id string) (Movie, error)
 	NewMovie(ctx context.Context, title string, director []string, year string, userid string) (string, error)
+	DeleteMovie(ctx context.Context, id string) error
 }
 
 //implementation with database and logger
@@ -112,4 +113,21 @@ func (m moviesService) NewMovie(ctx context.Context, title string, director []st
 
 		return "", errors.New("movie already exists")
 	}
+}
+
+//implementation
+func (m moviesService) DeleteMovie(ctx context.Context, id string) error {
+	rows, err := m.db.Query("select * from movies where id='" + id + "'")
+	if err != nil {
+		return err
+	}
+	if !rows.Next() {
+		return errors.New("movie does not exist")
+	}
+	_, err = m.db.Query("delete from movies where id = $1", id)
+	if err != nil {
+		return err
+	}
+	_, err = m.db.Query("delete from movie_directors where movie_id = $1", id)
+	return nil
 }

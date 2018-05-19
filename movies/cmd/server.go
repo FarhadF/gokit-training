@@ -53,6 +53,7 @@ func main() {
 		movies.MakeGetMoviesEndpoint(svc),
 		movies.MakeGetMovieByIdEndpoint(svc),
 		movies.MakeNewMovieEndpoint(svc),
+		movies.MakeDeleteMovieEndpoint(svc),
 	}
 	//execute grpc server
 	go func() {

@@ -10,6 +10,8 @@ service Movies {
     }
     rpc NewMovie (NewMovieRequest) returns (NewMovieResponse) {
     }
+    rpc DeleteMovie (DeleteMovieRequest) returns (DeleteMovieResponse) {
+    }
 }
 
 /*message GetMoviesResponse {
@@ -55,6 +57,14 @@ message NewMovieRequest {
 message NewMovieResponse {
     string id = 1;
     string err = 2;
+}
+
+message DeleteMovieRequest {
+    string id = 1;
+}
+
+message DeleteMovieResponse {
+    string err = 1;
 }
 
 message Empty {

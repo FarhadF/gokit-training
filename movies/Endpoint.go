@@ -17,6 +17,7 @@ type Endpoints struct {
 	GetMoviesEndpoint    endpoint.Endpoint
 	GetMovieByIdEndpoint endpoint.Endpoint
 	NewMovieEndpoint     endpoint.Endpoint
+	DeleteMovieEndpoint	 endpoint.Endpoint
 }
 
 //Make actual endpoint per Method
@@ -128,4 +129,42 @@ func (e Endpoints) NewMovie(ctx context.Context, title string, director []string
 		return newMovieResp.Id, errors.New(newMovieResp.Err)
 	}
 	return newMovieResp.Id, nil
+}
+
+//model request and response
+type deleteMovieRequest struct {
+	Id string `json:"id"`
+}
+
+type deleteMovieResponse struct {
+	Err   string `json:="err"`
+}
+
+//Make actual endpoint per Method
+func MakeDeleteMovieEndpoint(svc Service) (endpoint.Endpoint) {
+	return func(ctx context.Context, req interface{}) (interface{}, error) {
+		r := req.(deleteMovieRequest)
+		err := svc.DeleteMovie(ctx, r.Id)
+		if err != nil {
+			return deleteMovieResponse{ err.Error()}, nil
+		}
+		return deleteMovieResponse{""}, nil
+	}
+}
+
+// Wrapping Endpoints as a Service implementation.
+// Will be used in gRPC client
+func (e Endpoints) DeleteMovie(ctx context.Context, id string) error {
+	req := deleteMovieRequest{
+		Id: id,
+	}
+	resp, err := e.DeleteMovieEndpoint(ctx, req)
+	if err != nil {
+		return err
+	}
+	deleteMovieResp := resp.(deleteMovieResponse)
+	if deleteMovieResp.Err != "" {
+		return errors.New(deleteMovieResp.Err)
+	}
+	return nil
 }

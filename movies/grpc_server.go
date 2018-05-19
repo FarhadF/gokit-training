@@ -11,6 +11,7 @@ type grpcServer struct {
 	getMovies    grpctransport.Handler
 	getMovieById grpctransport.Handler
 	newMovie     grpctransport.Handler
+	deleteMovie  grpctransport.Handler
 }
 
 // implement getMovies server Interface in movies.pb.go
@@ -40,6 +41,15 @@ func (s *grpcServer) NewMovie(ctx context.Context, r *pb.NewMovieRequest) (*pb.N
 	return resp.(*pb.NewMovieResponse), nil
 }
 
+// implement DeleteMovie server Interface in movies.pb.go
+func (s *grpcServer) DeleteMovie(ctx context.Context, r *pb.DeleteMovieRequest) (*pb.DeleteMovieResponse, error) {
+	_, resp, err := s.deleteMovie.ServeGRPC(ctx, r)
+	if err != nil {
+		return nil, err
+	}
+	return resp.(*pb.DeleteMovieResponse), nil
+}
+
 // create new grpc server
 func NewGRPCServer(ctx context.Context, endpoint Endpoints) pb.MoviesServer {
 	return &grpcServer{
@@ -57,6 +67,11 @@ func NewGRPCServer(ctx context.Context, endpoint Endpoints) pb.MoviesServer {
 			endpoint.NewMovieEndpoint,
 			DecodeGRPCNewMovieRequest,
 			EncodeGRPCNewMovieResponse,
+		),
+		deleteMovie: grpctransport.NewServer(
+			endpoint.DeleteMovieEndpoint,
+			DecodeGRPCDeleteMovieRequest,
+			EncodeGRPCDeleteMovieResponse,
 		),
 	}
 }
