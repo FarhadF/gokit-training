@@ -45,7 +45,7 @@ func main() {
 		logger.Fatal().Err(err).Msg("db connection failed")
 	}
 	svc = movies.NewService(db, logger)
-	//svc = movies.LoggingMiddleware{logger, svc}
+	svc = movies.LoggingMiddleware{logger, svc}
 	//svc = movies.InstrumentingMiddleware{requestCount, requestLatency, countResult, svc}
 	errChan := make(chan error)
 	// creating Endpoints struct
