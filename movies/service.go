@@ -7,7 +7,6 @@ import (
 	"github.com/rs/zerolog"
 	"errors"
 	"time"
-	"fmt"
 	"reflect"
 )
 
@@ -16,6 +15,7 @@ type Service interface {
 	GetMovieById(ctx context.Context, id string) (Movie, error)
 	NewMovie(ctx context.Context, title string, director []string, year string, userid string) (string, error)
 	DeleteMovie(ctx context.Context, id string) error
+	UpdateMovie(ctx context.Context, id string, title string, director []string, year string, userid string) (error)
 }
 
 //implementation with database and logger
@@ -147,14 +147,17 @@ func (m moviesService) UpdateMovie(ctx context.Context, id string, title string,
 	if !rows.Next() {
 		return errors.New("movie does not exist")
 	}
-	updatedon := time.Now()
-	fmt.Println(updatedon.Format("2006-01-02 15:04:05.999999"))
-	_, err = m.db.Query("update movies set title = $1, year = $2, updatedon = $3 where id = $4", title, director,
-		year, id, updatedon.Format("2006-01-02 15:04:05.999999"))
+	updatedon := time.Now().UTC()
+	_, err = m.db.Query("update movies set title = $1, year = $2, updatedon = $3 where id = $4", title, year,
+		updatedon.Format("2006-01-02 15:04:05.999999"), id)
 	if err != nil {
 		return err
 	}
 	r, err := m.db.Query("select director from movie_directors where movie_id=$1", id)
+	if err != nil {
+		//todo rollback
+		return err
+	}
 	var dir []string
 	for r.Next()	{
 		var d string
@@ -172,7 +175,7 @@ func (m moviesService) UpdateMovie(ctx context.Context, id string, title string,
 		//todo: rollback
 		return err
 	}
-	for d := range dir {
+	for _, d := range director {
 		_, err = m.db.Query("insert into movie_directors (movie_id, director) values($1,$2)", id, d)
 		if err != nil {
 			//todo:rollback

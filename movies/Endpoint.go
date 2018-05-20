@@ -18,6 +18,7 @@ type Endpoints struct {
 	GetMovieByIdEndpoint endpoint.Endpoint
 	NewMovieEndpoint     endpoint.Endpoint
 	DeleteMovieEndpoint	 endpoint.Endpoint
+	UpdateMovieEndpoint  endpoint.Endpoint
 }
 
 //Make actual endpoint per Method
@@ -165,6 +166,51 @@ func (e Endpoints) DeleteMovie(ctx context.Context, id string) error {
 	deleteMovieResp := resp.(deleteMovieResponse)
 	if deleteMovieResp.Err != "" {
 		return errors.New(deleteMovieResp.Err)
+	}
+	return nil
+}
+
+//model request and response
+type updateMovieRequest struct {
+	Id 		 string `json:"id"`
+	Title    string `json:"title"`
+	Director []string `json:"director"`
+	Year     string `json:"year"`
+	Userid   string `json:"userid"`
+}
+
+type updateMovieResponse struct {
+	Err   string `json:="err"`
+}
+//Make actual endpoint per Method
+func MakeUpdateMovieEndpoint(svc Service) (endpoint.Endpoint) {
+	return func(ctx context.Context, req interface{}) (interface{}, error) {
+		r := req.(updateMovieRequest)
+		err := svc.UpdateMovie(ctx, r.Id, r.Title, r.Director, r.Year, r.Userid)
+		if err != nil {
+			return updateMovieResponse{ err.Error()}, nil
+		}
+		return updateMovieResponse{""}, nil
+	}
+}
+
+// Wrapping Endpoints as a Service implementation.
+// Will be used in gRPC client
+func (e Endpoints) UpdateMovie(ctx context.Context, id string, title string, director []string, year string, userid string) error {
+	req := updateMovieRequest{
+		Id: id,
+		Title: title,
+		Director: director,
+		Year: year,
+		Userid: userid,
+	}
+	resp, err := e.UpdateMovieEndpoint(ctx, req)
+	if err != nil {
+		return err
+	}
+	updateMovieResp := resp.(updateMovieResponse)
+	if updateMovieResp.Err != "" {
+		return errors.New(updateMovieResp.Err)
 	}
 	return nil
 }

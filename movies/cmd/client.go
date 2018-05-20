@@ -38,11 +38,18 @@ func NewGRPCClient(conn *grpc.ClientConn) movies.Service {
 		movies.DecodeGRPCDeleteMovieResponse,
 		pb.DeleteMovieResponse{},
 	).Endpoint()
+	var updateMovieEndpoint = grpctransport.NewClient(
+		conn, "pb.Movies", "UpdateMovie",
+		movies.EncodeGRPCUpdateMovieRequest,
+		movies.DecodeGRPCUpdateMovieResponse,
+		pb.UpdateMovieResponse{},
+	).Endpoint()
 	return movies.Endpoints{
-		getMoviesEndpoint,
-		getMovieByIdEndpoint,
-		newMovieEndpoint,
-		deleteMovieEndpoint,
+		GetMoviesEndpoint: getMoviesEndpoint,
+		GetMovieByIdEndpoint: getMovieByIdEndpoint,
+		NewMovieEndpoint: newMovieEndpoint,
+		DeleteMovieEndpoint: deleteMovieEndpoint,
+		UpdateMovieEndpoint: updateMovieEndpoint,
 	}
 }
 
@@ -56,6 +63,7 @@ func main() {
 		year     string
 		userId   string
 		deleteMovie bool
+		updateMovie bool
 	)
 	flag.StringVarP(&grpcAddr, "addr", "a", ":8081", "gRPC address")
 	flag.StringVarP(&movieId, "id", "i", "", "movieId")
@@ -65,6 +73,7 @@ func main() {
 	flag.StringVarP(&userId, "userid", "u", "", "userId")
 	flag.BoolVarP(&newMovie, "newmovie", "n", false, "newMovie")
 	flag.BoolVarP(&deleteMovie, "deletemovie", "D", false, "deleteMovie")
+	flag.BoolVarP(&updateMovie, "updatemovie", "U", false, "updateMovie")
 	//flag.StringVarP(&requestType, "requestType", "r", "word", "Should be word, sentence or paragraph")
 	//flag.IntVarP(&min,"min", "m", 5, "minimum value")
 	//flag.IntVarP(&max,"Max", "M", 10, "Maximum value")
@@ -95,6 +104,14 @@ func main() {
 	}
 	if deleteMovie != false && movieId != "" {
 		callDeleteMovie(ctx, movieId, moviesService, logger)
+	}
+	if updateMovie != false && movieId != "" && title != "" && director != "" && year != "" && userId != "" {
+		dir := strings.Split(director, ",")
+		var dirSlice []string
+		for _, d := range dir {
+			dirSlice = append(dirSlice, d)
+		}
+		callUpdateMovie(ctx, movieId, title, dirSlice, year, userId, moviesService, logger)
 	}
 
 }
@@ -132,4 +149,12 @@ func callDeleteMovie(ctx context.Context, id string, service movies.Service, log
 	} else {
 		logger.Info().Msg("Delete Successful for id: " + id)
 	}
+}
+
+func callUpdateMovie(ctx context.Context, id string, title string, director []string, year string, userId string, service movies.Service, logger zerolog.Logger) {
+	err := service.UpdateMovie(ctx, id, title, director, year, userId)
+	if err != nil {
+		logger.Fatal().Err(err).Msg("")
+	}
+	logger.Info().Msg("Successfully updated movie with id: " + id)
 }

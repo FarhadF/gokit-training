@@ -50,10 +50,11 @@ func main() {
 	errChan := make(chan error)
 	// creating Endpoints struct
 	endpoints := movies.Endpoints{
-		movies.MakeGetMoviesEndpoint(svc),
-		movies.MakeGetMovieByIdEndpoint(svc),
-		movies.MakeNewMovieEndpoint(svc),
-		movies.MakeDeleteMovieEndpoint(svc),
+		GetMoviesEndpoint: movies.MakeGetMoviesEndpoint(svc),
+		GetMovieByIdEndpoint: movies.MakeGetMovieByIdEndpoint(svc),
+		NewMovieEndpoint: movies.MakeNewMovieEndpoint(svc),
+		DeleteMovieEndpoint: movies.MakeDeleteMovieEndpoint(svc),
+		UpdateMovieEndpoint: movies.MakeUpdateMovieEndpoint(svc),
 	}
 	//execute grpc server
 	go func() {

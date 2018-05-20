@@ -12,6 +12,8 @@ service Movies {
     }
     rpc DeleteMovie (DeleteMovieRequest) returns (DeleteMovieResponse) {
     }
+    rpc UpdateMovie (UpdateMovieRequest) returns (UpdateMovieResponse) {
+    }
 }
 
 /*message GetMoviesResponse {
@@ -64,6 +66,18 @@ message DeleteMovieRequest {
 }
 
 message DeleteMovieResponse {
+    string err = 1;
+}
+
+message UpdateMovieRequest {
+    string id = 1;
+    string title = 2;
+    repeated Director director = 3;
+    string year = 4;
+    string userid = 5;
+}
+
+message UpdateMovieResponse {
     string err = 1;
 }
 

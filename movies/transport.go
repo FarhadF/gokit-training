@@ -249,3 +249,50 @@ func DecodeGRPCDeleteMovieResponse(_ context.Context, r interface{}) (interface{
 		Err: resp.Err,
 	}, nil
 }
+
+//encode updateMovieRequest
+func EncodeGRPCUpdateMovieRequest(_ context.Context, r interface{}) (interface{}, error) {
+	req := r.(updateMovieRequest)
+	var director []*pb.Director
+	for _, d := range req.Director {
+		director = append(director, &pb.Director{Director: d})
+	}
+	return &pb.UpdateMovieRequest{
+		Id: req.Id,
+		Title: req.Title,
+		Director: director,
+		Year: req.Year,
+		Userid: req.Userid,
+	}, nil
+}
+
+//decode UpdateMovieRequest
+func DecodeGRPCUpdateMovieRequest(ctx context.Context, r interface{}) (interface{}, error) {
+	req := r.(*pb.UpdateMovieRequest)
+	var director []string
+	for _, d := range req.Director {
+		director = append(director, d.Director)
+	}
+	return updateMovieRequest{
+		Id: req.Id,
+		Title: req.Title,
+		Director: director,
+		Year: req.Year,
+		Userid: req.Userid,
+	}, nil
+}
+
+// Encode and Decode UpdateMovieResponse
+func EncodeGRPCUpdateMovieResponse(_ context.Context, r interface{}) (interface{}, error) {
+	resp := r.(updateMovieResponse)
+	return &pb.UpdateMovieResponse{
+		Err: resp.Err,
+	}, nil
+}
+
+func DecodeGRPCUpdateMovieResponse(_ context.Context, r interface{}) (interface{}, error) {
+	resp := r.(*pb.UpdateMovieResponse)
+	return updateMovieResponse{
+		Err: resp.Err,
+	}, nil
+}
