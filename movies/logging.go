@@ -31,7 +31,8 @@ func (mw LoggingMiddleware) GetMovieById(ctx context.Context, id string) (output
 
 func (mw LoggingMiddleware) NewMovie(ctx context.Context, title string, director []string, year string, userid string) (output string, err error) {
 	defer func(begin time.Time) {
-		mw.Logger.Info().Str("method", "NewMovie").Err(err).Dur("took", time.Since(begin)).Msg("")
+		mw.Logger.Info().Str("method", "NewMovie").Str("title",title).Strs("director", director).
+			Err(err).Dur("took", time.Since(begin)).Msg("")
 	}(time.Now())
 	output, err = mw.Next.NewMovie(ctx, title, director, year, userid)
 	return
@@ -39,7 +40,8 @@ func (mw LoggingMiddleware) NewMovie(ctx context.Context, title string, director
 
 func (mw LoggingMiddleware) DeleteMovie(ctx context.Context, id string) (err error) {
 	defer func(begin time.Time) {
-		mw.Logger.Info().Str("method", "DeleteMovie").Err(err).Dur("took", time.Since(begin)).Msg("")
+		mw.Logger.Info().Str("method", "DeleteMovie").Str("id", id).Err(err).Dur("took",
+			time.Since(begin)).Msg("")
 	}(time.Now())
 	err = mw.Next.DeleteMovie(ctx, id)
 	return
