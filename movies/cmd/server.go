@@ -16,9 +16,8 @@ import (
 	"gokit-training/movies"
 	"google.golang.org/grpc"
 	"gokit-training/movies/pb"
-	"database/sql"
-	_ "github.com/lib/pq"
-)
+	"github.com/jackc/pgx"
+	)
 
 func main() {
 	//zerolog
@@ -40,11 +39,26 @@ func main() {
 
 	// init movies service
 	var svc movies.Service
-	db, err := sql.Open("postgres", "postgresql://app_user@localhost:26257/app_database?sslmode=disable")
+
+	connPoolConfig := pgx.ConnPoolConfig{
+		ConnConfig: pgx.ConnConfig{
+			Host:     "127.0.0.1",
+			Port:     26257,
+			User:     "app_user",
+			Database: "app_database",
+			//Logger: logger, todo: fix logger
+		},
+		MaxConnections: 5,
+	}
+	pool, err := pgx.NewConnPool(connPoolConfig)
+	if err != nil {
+		logger.Fatal().Err(err).Msg("Unable to create connection pool")
+	}
+	/*db, err := sql.Open("postgres", "postgresql://app_user@localhost:26257/app_database?sslmode=disable")
 	if err != nil {
 		logger.Fatal().Err(err).Msg("db connection failed")
-	}
-	svc = movies.NewService(db, logger)
+	}*/
+	svc = movies.NewService(pool, logger)
 	svc = movies.LoggingMiddleware{logger, svc}
 	//svc = movies.InstrumentingMiddleware{requestCount, requestLatency, countResult, svc}
 	errChan := make(chan error)

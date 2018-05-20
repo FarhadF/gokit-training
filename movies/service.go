@@ -3,11 +3,11 @@ package movies
 import (
 	"context"
 
-	"database/sql"
 	"github.com/rs/zerolog"
 	"errors"
 	"time"
 	"reflect"
+	"github.com/jackc/pgx"
 )
 
 type Service interface {
@@ -20,12 +20,12 @@ type Service interface {
 
 //implementation with database and logger
 type moviesService struct {
-	db     *sql.DB
+	db     *pgx.ConnPool
 	logger zerolog.Logger
 }
 
 //constructor - we can later add initialization if needed
-func NewService(db *sql.DB, logger zerolog.Logger) Service {
+func NewService(db *pgx.ConnPool, logger zerolog.Logger) Service {
 	return moviesService{
 		db,
 		logger,
