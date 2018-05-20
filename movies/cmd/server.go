@@ -17,6 +17,8 @@ import (
 	"google.golang.org/grpc"
 	"gokit-training/movies/pb"
 	"github.com/jackc/pgx"
+	stdprometheus "github.com/prometheus/client_golang/prometheus"
+	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
 	)
 
 func main() {
@@ -58,9 +60,29 @@ func main() {
 	if err != nil {
 		logger.Fatal().Err(err).Msg("db connection failed")
 	}*/
+
+	//instrumentation
+	fieldKeys := []string{"method", "error"}
+	requestCount := kitprometheus.NewCounterFrom(stdprometheus.CounterOpts{
+		Namespace: "my_group",
+		Subsystem: "movies_service",
+		Name:      "request_count",
+		Help:      "Number of requests received.",
+	}, fieldKeys)
+	requestLatency := kitprometheus.NewSummaryFrom(stdprometheus.SummaryOpts{
+		Namespace: "my_group",
+		Subsystem: "movies_service",
+		Name:      "request_latency_microseconds",
+		Help:      "Total duration of requests in microseconds.",
+	}, fieldKeys)
+
+	// init movies service
+	var svc movies.Service
 	svc = movies.NewService(pool, logger)
+	//wire logging
 	svc = movies.LoggingMiddleware{logger, svc}
-	//svc = movies.InstrumentingMiddleware{requestCount, requestLatency, countResult, svc}
+	//wire instrumentation
+	svc = movies.InstrumentingMiddleware{requestCount, requestLatency,  svc}
 	errChan := make(chan error)
 	// creating Endpoints struct
 	endpoints := movies.Endpoints{
