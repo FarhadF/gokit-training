@@ -20,7 +20,7 @@ import (
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
 	)
-
+var pool *pgx.ConnPool
 func main() {
 	//zerolog
 	logger := zerolog.New(os.Stderr).With().Timestamp().Caller().Logger()
@@ -38,10 +38,7 @@ func main() {
 		logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	}
 	ctx := context.Background()
-
-	// init movies service
-	var svc movies.Service
-
+    //database
 	connPoolConfig := pgx.ConnPoolConfig{
 		ConnConfig: pgx.ConnConfig{
 			Host:     "127.0.0.1",

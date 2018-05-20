@@ -102,11 +102,11 @@ func (m moviesService) NewMovie(ctx context.Context, title string, director []st
 			return "", err
 		}
 		for _, d := range director {
-			_, err = m.db.Query("insert into movie_directors (movie_id, director) values($1,$2)", id, d)
+			_, err = m.db.Exec("insert into movie_directors (movie_id, director) values($1,$2)", id, d)
 			if err != nil {
 				//rollback
 				err1 := err
-				_, err := m.db.Query("delete from movies where id=$1", id)
+				_, err := m.db.Exec("delete from movies where id=$1", id)
 				if err != nil {
 					return "", err
 				}
@@ -130,11 +130,11 @@ func (m moviesService) DeleteMovie(ctx context.Context, id string) error {
 	if !rows.Next() {
 		return errors.New("movie does not exist")
 	}
-	_, err = m.db.Query("delete from movies where id = $1", id)
+	_, err = m.db.Exec("delete from movies where id = $1", id)
 	if err != nil {
 		return err
 	}
-	_, err = m.db.Query("delete from movie_directors where movie_id = $1", id)
+	_, err = m.db.Exec("delete from movie_directors where movie_id = $1", id)
 	return nil
 }
 
@@ -148,7 +148,7 @@ func (m moviesService) UpdateMovie(ctx context.Context, id string, title string,
 		return errors.New("movie does not exist")
 	}
 	updatedon := time.Now().UTC()
-	_, err = m.db.Query("update movies set title = $1, year = $2, updatedon = $3 where id = $4", title, year,
+	_, err = m.db.Exec("update movies set title = $1, year = $2, updatedon = $3 where id = $4", title, year,
 		updatedon.Format("2006-01-02 15:04:05.999999"), id)
 	if err != nil {
 		return err
@@ -170,13 +170,13 @@ func (m moviesService) UpdateMovie(ctx context.Context, id string, title string,
 	if reflect.DeepEqual(dir, director) {
 		return nil
 	}
-	_, err = m.db.Query("delete from movie_directors where movie_id = $1", id)
+	_, err = m.db.Exec("delete from movie_directors where movie_id = $1", id)
 	if err != nil {
 		//todo: rollback
 		return err
 	}
 	for _, d := range director {
-		_, err = m.db.Query("insert into movie_directors (movie_id, director) values($1,$2)", id, d)
+		_, err = m.db.Exec("insert into movie_directors (movie_id, director) values($1,$2)", id, d)
 		if err != nil {
 			//todo:rollback
 			return err
