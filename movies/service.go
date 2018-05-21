@@ -45,13 +45,14 @@ func (m moviesService) GetMovies(ctx context.Context) ([]Movie, error) {
 		if err != nil {
 			return nil, err
 		}
+
 		r, err := m.db.Query("select director from movie_directors where movie_id=$1", movie.Id)
 		if err != nil {
 			return nil, err
 		}
 		var director []string
+		var d string
 		for r.Next()	{
-			var d string
 			err = r.Scan(&d)
 			if err != nil {
 				return nil, err
@@ -89,6 +90,7 @@ func (m moviesService) GetMovieById(ctx context.Context, id string) (Movie, erro
 //implementation
 func (m moviesService) NewMovie(ctx context.Context, title string, director []string, year string, userid string) (string, error) {
 	rows, err := m.db.Query("select * from movies where title='" + title + "'")
+	defer rows.Close()
 	if err != nil {
 		//todo: add logging
 		return "", err
@@ -124,6 +126,7 @@ func (m moviesService) NewMovie(ctx context.Context, title string, director []st
 //implementation
 func (m moviesService) DeleteMovie(ctx context.Context, id string) error {
 	rows, err := m.db.Query("select * from movies where id='" + id + "'")
+	defer rows.Close()
 	if err != nil {
 		return err
 	}
@@ -141,6 +144,7 @@ func (m moviesService) DeleteMovie(ctx context.Context, id string) error {
 //implementation
 func (m moviesService) UpdateMovie(ctx context.Context, id string, title string, director []string, year string, userid string) error {
 	rows, err := m.db.Query("select * from movies where id='" + id + "'")
+	defer rows.Close()
 	if err != nil {
 		return err
 	}
@@ -154,6 +158,7 @@ func (m moviesService) UpdateMovie(ctx context.Context, id string, title string,
 		return err
 	}
 	r, err := m.db.Query("select director from movie_directors where movie_id=$1", id)
+	defer r.Close()
 	if err != nil {
 		//todo rollback
 		return err
