@@ -2,28 +2,14 @@ package main
 
 import (
 	"google.golang.org/grpc"
-	"gokit-training/lorem"
-	grpctransport "github.com/go-kit/kit/transport/grpc"
-	"gokit-training/lorem/pb"
 	flag "github.com/spf13/pflag"
 	"context"
 	"github.com/rs/zerolog"
 	"os"
-	"fmt"
+	"gokit-training/lorem/client"
 )
 
-//create new client returns Lorem Service
-func NewGRPCClient(conn *grpc.ClientConn) lorem.Service {
-	var loremEndpoint = grpctransport.NewClient(
-		conn, "pb.Lorem", "Lorem",
-		lorem.EncodeGRPCLoremRequest,
-		lorem.DecodeGRPCLoremResponse,
-		pb.LoremResponse{},
-	).Endpoint()
-	return lorem.Endpoints{
-		loremEndpoint,
-	}
-}
+
 
 func main() {
 	var (
@@ -33,8 +19,6 @@ func main() {
 		min         int
 		max         int
 	)
-	//service = flag.StringP("service", "s","Lorem")
-	//flag.StringVarP(&method,"method", "m", "lorem", "The only method available right now")
 	flag.StringVarP(&requestType, "requestType", "r", "word", "Should be word, sentence or paragraph")
 	flag.IntVarP(&min, "min", "m", 5, "minimum value")
 	flag.IntVarP(&max, "Max", "M", 10, "Maximum value")
@@ -47,20 +31,13 @@ func main() {
 		logger.Fatal().Err(err).Msg("")
 	}
 	defer conn.Close()
-	loremService := NewGRPCClient(conn)
-	//switch method {
-	//case "lorem":
-
-	callLorem(ctx, loremService, requestType, min, max, logger)
-
-	//}
-}
-
-//callService helper
-func callLorem(ctx context.Context, service lorem.Service, requestType string, min int, max int, logger zerolog.Logger) {
-	mesg, err := service.Lorem(ctx, requestType, min, max)
+	loremService := client.NewGRPCClient(conn)
+	m, err := client.Lorem(ctx, loremService, requestType, min, max)
 	if err != nil {
-		logger.Fatal().Err(err).Msg("")
+		logger.Error().Err(err).Msg("")
 	}
-	fmt.Println(mesg)
+	logger.Info().Msg(m)
+
 }
+
+
