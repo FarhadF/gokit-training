@@ -2,56 +2,13 @@ package main
 
 import (
 	"google.golang.org/grpc"
-	"gokit-training/movies"
-	grpctransport "github.com/go-kit/kit/transport/grpc"
-	"gokit-training/movies/pb"
 	flag "github.com/spf13/pflag"
 	"context"
 	"github.com/rs/zerolog"
 	"os"
 	"strings"
+	"gokit-training/movies/client"
 )
-
-//create new client returns GetMovies Service
-func NewGRPCClient(conn *grpc.ClientConn) movies.Service {
-	var getMoviesEndpoint = grpctransport.NewClient(
-		conn, "pb.Movies", "GetMovies",
-		movies.EncodeGRPCGetMoviesRequest,
-		movies.DecodeGRPCGetMoviesResponse,
-		pb.GetMoviesResponse{},
-	).Endpoint()
-	var getMovieByIdEndpoint = grpctransport.NewClient(
-		conn, "pb.Movies", "GetMovieById",
-		movies.EncodeGRPCGetMovieByIdRequest,
-		movies.DecodeGRPCGetMovieByIdResponse,
-		pb.GetMovieByIdResponse{},
-	).Endpoint()
-	var newMovieEndpoint = grpctransport.NewClient(
-		conn, "pb.Movies", "NewMovie",
-		movies.EncodeGRPCNewMovieRequest,
-		movies.DecodeGRPCNewMovieResponse,
-		pb.NewMovieResponse{},
-	).Endpoint()
-	var deleteMovieEndpoint = grpctransport.NewClient(
-		conn, "pb.Movies", "DeleteMovie",
-		movies.EncodeGRPCDeleteMovieRequest,
-		movies.DecodeGRPCDeleteMovieResponse,
-		pb.DeleteMovieResponse{},
-	).Endpoint()
-	var updateMovieEndpoint = grpctransport.NewClient(
-		conn, "pb.Movies", "UpdateMovie",
-		movies.EncodeGRPCUpdateMovieRequest,
-		movies.DecodeGRPCUpdateMovieResponse,
-		pb.UpdateMovieResponse{},
-	).Endpoint()
-	return movies.Endpoints{
-		GetMoviesEndpoint: getMoviesEndpoint,
-		GetMovieByIdEndpoint: getMovieByIdEndpoint,
-		NewMovieEndpoint: newMovieEndpoint,
-		DeleteMovieEndpoint: deleteMovieEndpoint,
-		UpdateMovieEndpoint: updateMovieEndpoint,
-	}
-}
 
 func main() {
 	var (
@@ -86,12 +43,20 @@ func main() {
 		logger.Fatal().Err(err).Msg("")
 	}
 	defer conn.Close()
-	moviesService := NewGRPCClient(conn)
+	moviesService := client.NewGRPCClient(conn)
 	if movieId == "" && newMovie == false{
-		callGetMovies(ctx, moviesService, logger)
+		movies, err := client.GetMovies(ctx, moviesService)
+		if err != nil {
+			logger.Fatal().Err(err).Msg("")
+		}
+		logger.Info().Interface("movies", movies).Msg("")
 	}
 	if movieId != "" && deleteMovie == false {
-		callGetMovieById(ctx, movieId, moviesService, logger)
+		movie, err := client.GetMovieById(ctx, movieId, moviesService)
+		if err != nil {
+			logger.Fatal().Err(err).Msg("")
+		}
+		logger.Info().Interface("movie", movie).Msg("")
 
 	}
 	if newMovie != false && title != "" && director != "" && year != "" && userId != "" {
@@ -100,10 +65,19 @@ func main() {
 		for _, d := range dir {
 			dirSlice = append(dirSlice, d)
 		}
-		callNewMovie(ctx, title, dirSlice, year, userId, moviesService, logger)
+		id, err := client.NewMovie(ctx, title, dirSlice, year, userId, moviesService)
+		if err != nil {
+			logger.Fatal().Err(err).Msg("")
+		}
+		logger.Info().Str("id", id).Msg("")
 	}
 	if deleteMovie != false && movieId != "" {
-		callDeleteMovie(ctx, movieId, moviesService, logger)
+		err := client.DeleteMovie(ctx, movieId, moviesService)
+		if err != nil {
+			logger.Fatal().Err(err).Msg("")
+		} else {
+			logger.Info().Msg("Delete Successful for id: " + movieId)
+		}
 	}
 	if updateMovie != false && movieId != "" && title != "" && director != "" && year != "" && userId != "" {
 		dir := strings.Split(director, ",")
@@ -111,50 +85,11 @@ func main() {
 		for _, d := range dir {
 			dirSlice = append(dirSlice, d)
 		}
-		callUpdateMovie(ctx, movieId, title, dirSlice, year, userId, moviesService, logger)
-	}
-
-}
-
-//callService helper
-func callGetMovies(ctx context.Context, service movies.Service, logger zerolog.Logger) {
-	mesg, err := service.GetMovies(ctx)
-	if err != nil {
-		logger.Fatal().Err(err).Msg("")
-	}
-	//j, err := json.Marshal(mesg)
-	logger.Info().Interface("movie", mesg).Msg("")
-}
-
-func callGetMovieById(ctx context.Context, id string, service movies.Service, logger zerolog.Logger) {
-	mesg, err := service.GetMovieById(ctx, id)
-	if err != nil {
-		logger.Fatal().Err(err).Msg("")
-	}
-	logger.Info().Interface("movie", mesg).Msg("")
-}
-
-func callNewMovie(ctx context.Context, title string, director []string, year string, userId string, service movies.Service, logger zerolog.Logger) {
-	mesg, err := service.NewMovie(ctx, title, director, year, userId)
-	if err != nil {
-		logger.Fatal().Err(err).Msg("")
-	}
-	logger.Info().Str("id", mesg).Msg("")
-}
-
-func callDeleteMovie(ctx context.Context, id string, service movies.Service, logger zerolog.Logger) {
-	err := service.DeleteMovie(ctx, id)
-	if err != nil {
-		logger.Fatal().Err(err).Msg("")
-	} else {
-		logger.Info().Msg("Delete Successful for id: " + id)
+		err := client.UpdateMovie(ctx, movieId, title, dirSlice, year, userId, moviesService)
+		if err != nil {
+			logger.Fatal().Err(err).Msg("")
+		}
+		logger.Info().Msg("Successfully updated movie with id: " + movieId)
 	}
 }
 
-func callUpdateMovie(ctx context.Context, id string, title string, director []string, year string, userId string, service movies.Service, logger zerolog.Logger) {
-	err := service.UpdateMovie(ctx, id, title, director, year, userId)
-	if err != nil {
-		logger.Fatal().Err(err).Msg("")
-	}
-	logger.Info().Msg("Successfully updated movie with id: " + id)
-}
